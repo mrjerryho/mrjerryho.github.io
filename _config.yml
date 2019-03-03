@@ -3,3 +3,4 @@ title: Welcome to Jerry Ho's Homepage!
 description: Feel free to browse around!
 name: Jerry Ho
 markdown: kramdown
+permalink: /blog/:year/:month/:day/:title
