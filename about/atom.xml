@@ -1,0 +1,15 @@
+---
+layout: feed
+---
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+	<title>About Jerry Ho</title>
+	<link href="http://mrjerryho.github.io/about/atom.xml" rel="self"/>
+	<link href="http://mrjerryho.github.io/about"/>
+	<updated>{{ site.time | date_to_xmlschema }}</updated>
+	<id>http://mrjerryho.github.io/about</id>
+	<author>
+		<name>Jerry Ho</name>
+		<email>x.jerryho@gmail.com</email>
+	</author>
+</feed>
