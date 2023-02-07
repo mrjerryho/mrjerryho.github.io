@@ -1,6 +1,6 @@
 /*!
  * Start Bootstrap - Grayscale v5.0.6 (https://startbootstrap.com/template-overviews/grayscale)
- * Copyright 2013-2019 Start Bootstrap
+ * Copyright 2013-2023 Start Bootstrap
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-grayscale/blob/master/LICENSE)
  */
 
@@ -172,8 +172,13 @@
   background: linear-gradient(to bottom, #161616 0%, rgba(22, 22, 22, 0.9) 75%, rgba(22, 22, 22, 0.8) 100%);
 }
 
-.about-section p {
+.about-section .skills-list {
   margin-bottom: 5rem;
+  text-align: left;
+}
+
+.about-section .skills-list b {
+  color: white;
 }
 
 .projects-section {
