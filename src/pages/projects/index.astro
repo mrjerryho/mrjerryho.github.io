@@ -1,0 +1,59 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const groups = ['iOS', 'Trading', 'AI', 'Web', 'Data'].filter((g) => all.some((p) => p.data.groups.includes(g as never)));
+---
+<Base title="Work" description="Projects by Jerry Ho: iOS apps, trading tools, AI-agent workflows and web apps.">
+  <section class="wrap pt-12 pb-8">
+    <p class="eyebrow mb-4">Work</p>
+    <h1 class="text-4xl sm:text-5xl font-semibold">Projects</h1>
+    <p class="muted mt-4 max-w-[60ch]">
+      Side projects from the last couple of years. Most repos are private while they're in progress, so each one has a
+      write-up with its architecture, the hard part, and how I tested it.
+    </p>
+    <div class="flex flex-wrap gap-2 mt-8" role="group" aria-label="Filter projects">
+      <button class="fchip on" data-filter="all" aria-pressed="true">All</button>
+      {groups.map((g) => <button class="fchip" data-filter={g} aria-pressed="false">{g}</button>)}
+    </div>
+  </section>
+
+  <section class="wrap">
+    <ul class="grid gap-px bg-[var(--line)] border border-[var(--line)] rounded-2xl overflow-hidden sm:grid-cols-2">
+      {all.map((p) => (
+        <li class="pcard bg-[var(--bg)]" data-groups={p.data.groups.join(' ')}>
+          <a href={`/projects/${p.id}/`} class="block h-full p-6 no-underline group">
+            <div class="flex items-center justify-between gap-4">
+              <span class="status">{p.data.status}</span>
+              <span class="mono text-xs muted">{p.data.groups.join(' · ')}</span>
+            </div>
+            <h2 class="text-xl font-semibold mt-4 group-hover:text-[var(--accent-ink)]">{p.data.title}</h2>
+            <p class="muted text-[15px] mt-1">{p.data.subtitle}</p>
+            <p class="text-[15px] mt-3">{p.data.summary}</p>
+            <p class="mono text-xs muted mt-4">{p.data.stack.slice(0, 5).join(' · ')}</p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .fchip { font-family: var(--font-mono); font-size: 13px; border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; min-height: 36px; color: var(--muted); cursor: pointer; }
+  .fchip:hover { color: var(--ink); }
+  .fchip.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .pcard[hidden] { display: none; }
+</style>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('.fchip');
+  const cards = document.querySelectorAll<HTMLElement>('.pcard');
+  chips.forEach((c) =>
+    c.addEventListener('click', () => {
+      const f = c.dataset.filter!;
+      chips.forEach((x) => { x.classList.toggle('on', x === c); x.setAttribute('aria-pressed', String(x === c)); });
+      cards.forEach((card) => { card.hidden = f !== 'all' && !card.dataset.groups!.split(' ').includes(f); });
+    }),
+  );
+</script>

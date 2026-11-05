@@ -1,0 +1,17 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const page = await getEntry('pages', 'how-i-build');
+const rendered = page ? await render(page) : null;
+---
+<Base title={page?.data.title ?? 'How I build'} description={page?.data.description}>
+  <article class="wrap pt-12">
+    <p class="eyebrow mb-4">How I build</p>
+    <h1 class="text-4xl sm:text-5xl font-semibold max-w-[20ch]">{page?.data.title ?? 'How I build'}</h1>
+    {page && <p class="text-lg muted mt-4 max-w-[60ch]">{page.data.description}</p>}
+    <div class="prose mt-10">
+      {rendered ? <rendered.Content /> : <p class="muted">Coming soon.</p>}
+    </div>
+  </article>
+</Base>

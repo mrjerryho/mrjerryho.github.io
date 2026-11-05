@@ -1,0 +1,44 @@
+---
+interface Props { items: { src: string; caption: string }[]; title: string }
+const { items, title } = Astro.props;
+---
+{items.length > 0 && (
+  <section class="gallery" aria-label={`${title} screenshots`} data-gallery>
+    <div class="flex items-center justify-between mb-3">
+      <div class="eyebrow">How it works</div>
+      <div class="flex gap-2">
+        <button class="gbtn" data-dir="-1" aria-label="Previous screenshot">←</button>
+        <button class="gbtn" data-dir="1" aria-label="Next screenshot">→</button>
+      </div>
+    </div>
+    <div class="track" tabindex="0">
+      {items.map((it, i) => (
+        <figure class="slide">
+          <img src={it.src} alt={it.caption} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
+          <figcaption class="text-[13px] muted mt-2 leading-snug">{it.caption}</figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .track { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding-bottom: 12px; scrollbar-width: thin; }
+  .slide { flex: 0 0 auto; scroll-snap-align: start; margin: 0; max-width: min(300px, 78vw); }
+  .slide img { height: min(560px, 70vh); width: auto; max-width: 100%; object-fit: contain; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); }
+  .gbtn { width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); cursor: pointer; }
+  .gbtn:hover { color: var(--ink); border-color: var(--muted); }
+</style>
+
+<script>
+  for (const g of document.querySelectorAll<HTMLElement>('[data-gallery]')) {
+    const track = g.querySelector<HTMLElement>('.track')!;
+    g.querySelectorAll<HTMLButtonElement>('.gbtn').forEach((b) =>
+      b.addEventListener('click', () => {
+        const slide = track.querySelector<HTMLElement>('.slide');
+        const step = slide ? slide.offsetWidth + 20 : 300;
+        track.scrollBy({ left: Number(b.dataset.dir) * step });
+      }),
+    );
+  }
+</script>

@@ -1,0 +1,70 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ProjectRow from '../components/ProjectRow.astro';
+import { site, experience } from '../data/site';
+
+const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const featured = all.filter((p) => p.data.featured);
+const shownExperience = experience.filter((e) => import.meta.env.DEV || !e.draft);
+---
+<Base>
+  <section class="wrap pt-12 pb-16 sm:pt-20">
+    <div class="grid gap-10 sm:grid-cols-[1fr_auto] items-end">
+      <div>
+        <p class="eyebrow mb-5">{site.title} · {site.location}</p>
+        <h1 class="text-4xl sm:text-6xl font-semibold leading-[1.05] max-w-[16ch]">
+          I build full-stack systems, iOS apps and the agents that help ship them.
+        </h1>
+        <p class="text-lg muted mt-6 max-w-[58ch]">
+          Coding since 2012 and shipping software professionally for almost ten years, across streaming media,
+          e-commerce and real estate tech. Outside work I build trading tools, fitness and focus apps, and a team of
+          AI coding agents that does most of the typing while I design, review and decide.
+        </p>
+        <div class="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-[15px]">
+          <a class="link" href="/projects/">See the work</a>
+          <a class="link" href={`mailto:${site.email}`}>Email me</a>
+          <a class="link" href={site.linkedin}>LinkedIn</a>
+        </div>
+      </div>
+      <img src="/img/jerry.jpg" alt="Jerry Ho" width="180" height="180"
+           class="hidden sm:block w-[180px] h-[180px] rounded-full object-cover object-top border border-[var(--line)]" />
+    </div>
+  </section>
+
+  <section class="wrap" aria-labelledby="work">
+    <div class="flex items-baseline justify-between mb-2">
+      <h2 id="work" class="eyebrow">Selected work</h2>
+      <a href="/projects/" class="text-sm muted no-underline hover:text-[var(--ink)]">All projects →</a>
+    </div>
+    {featured.map((p, i) => <ProjectRow project={p} index={i + 1} />)}
+  </section>
+
+  <section class="wrap mt-16" aria-labelledby="experience">
+    <h2 id="experience" class="eyebrow mb-8">Professional experience</h2>
+    <div class="grid gap-x-12 gap-y-10 md:grid-cols-2">
+      {shownExperience.map((e) => (
+        <div class:list={['border-t border-[var(--line)] pt-6', { 'opacity-50': e.draft }]}>
+          <h3 class="text-xl font-semibold">{e.area}{e.draft && <span class="mono text-xs muted ml-2">draft, hidden in production</span>}</h3>
+          <ul class="mt-3 space-y-2">
+            {e.points.map((pt) => <li class="muted">{pt}</li>)}
+          </ul>
+          {e.stack.length > 0 && <ul class="flex flex-wrap gap-2 mt-4">{e.stack.map((s) => <li class="chip">{s}</li>)}</ul>}
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap mt-24">
+    <div class="border-t border-[var(--line)] pt-10 grid gap-6 md:grid-cols-[1fr_1.2fr]">
+      <h2 class="text-3xl font-semibold leading-tight max-w-[18ch]">Agents draft. Tests verify. I decide.</h2>
+      <div>
+        <p class="muted">
+          My side projects are built by a team of AI coding agents with defined roles, guardrails and sources of truth.
+          I act as product owner and reviewer. Nothing counts as done until a test or a real run says so.
+        </p>
+        <a href="/how-i-build/" class="link inline-block mt-4">How I build →</a>
+      </div>
+    </div>
+  </section>
+</Base>

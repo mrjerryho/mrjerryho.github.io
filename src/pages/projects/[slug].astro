@@ -1,0 +1,67 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Gallery from '../../components/Gallery.astro';
+import ArchDiagram from '../../components/ArchDiagram.astro';
+
+export async function getStaticPaths() {
+  const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+  return all.map((project, i) => ({ params: { slug: project.id }, props: { project, next: all[(i + 1) % all.length] } }));
+}
+const { project, next } = Astro.props;
+const d = project.data;
+const { Content } = await render(project);
+---
+<Base title={d.title} description={`${d.title}: ${d.subtitle}. ${d.summary}`} image={d.cover}>
+  <article>
+    <header class="wrap pt-10 pb-10">
+      <a href="/projects/" class="text-sm muted no-underline hover:text-[var(--ink)]">← All projects</a>
+      <div class="flex flex-wrap items-center gap-3 mt-8">
+        <span class="status">{d.status}</span>
+        <span class="mono text-xs muted">{d.groups.join(' · ')}</span>
+        {d.workingName && <span class="mono text-xs muted">working name</span>}
+      </div>
+      <h1 class="text-4xl sm:text-6xl font-semibold mt-4">{d.title}</h1>
+      <p class="text-xl muted mt-3 max-w-[50ch]">{d.subtitle}</p>
+      <p class="mt-6 max-w-[64ch] text-[17px]">{d.summary}</p>
+      <ul class="flex flex-wrap gap-2 mt-6" aria-label="Stack">{d.stack.map((s) => <li class="chip">{s}</li>)}</ul>
+      {d.facts.length > 0 && (
+        <dl class="flex flex-wrap gap-x-10 gap-y-4 mt-8">
+          {d.facts.map((f) => (
+            <div>
+              <dt class="eyebrow">{f.label}</dt>
+              <dd class="font-medium mt-1">{f.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+    </header>
+
+    {d.gallery.length > 0 && <div class="wrap pb-12"><Gallery items={d.gallery} title={d.title} /></div>}
+
+    {d.architecture && (
+      <section class="wrap pb-12" aria-labelledby="arch">
+        <h2 id="arch" class="eyebrow mb-4">System architecture</h2>
+        <ArchDiagram {...d.architecture} />
+      </section>
+    )}
+
+    <div class="wrap">
+      <div class="prose"><Content /></div>
+      <p class="mt-12 pt-6 border-t border-[var(--line)] max-w-[68ch] muted">
+        The repo is private while it's in progress. I'm happy to walk through the architecture, trade-offs and code in a
+        conversation: <a class="link" href="mailto:mrjerryho@gmail.com">mrjerryho@gmail.com</a>.
+      </p>
+    </div>
+  </article>
+
+  {next.id !== project.id && (
+    <nav class="wrap mt-20">
+      <a href={`/projects/${next.id}/`} class="block border-t border-[var(--line)] pt-8 no-underline group">
+        <span class="eyebrow">Next project</span>
+        <span class="block text-2xl font-semibold mt-2 group-hover:text-[var(--accent-ink)]">{next.data.title} →</span>
+        <span class="block muted mt-1">{next.data.subtitle}</span>
+      </a>
+    </nav>
+  )}
+</Base>

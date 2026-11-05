@@ -1,0 +1,52 @@
+---
+import '../styles/global.css';
+import { site } from '../data/site';
+
+interface Props { title?: string; description?: string; image?: string }
+const { title, description = site.description, image = '/img/jerry.jpg' } = Astro.props;
+const fullTitle = title ? `${title} · ${site.name}` : `${site.name} · ${site.title}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/projects/', label: 'Work' },
+  { href: '/how-i-build/', label: 'How I build' },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <header class="wrap w-full flex items-center justify-between py-6">
+      <a href="/" class="font-semibold tracking-tight no-underline">Jerry Ho</a>
+      <nav class="flex items-center gap-5 text-[15px]">
+        {nav.map((n) => (
+          <a href={n.href} class:list={['no-underline hover:text-[var(--accent-ink)]', path.startsWith(n.href) ? 'text-[var(--ink)]' : 'muted']}
+             aria-current={path.startsWith(n.href) ? 'page' : undefined}>{n.label}</a>
+        ))}
+        <a href={site.github} class="muted no-underline hover:text-[var(--accent-ink)]">GitHub</a>
+      </nav>
+    </header>
+    <main class="flex-1">
+      <slot />
+    </main>
+    <footer class="wrap w-full py-10 mt-20 border-t border-[var(--line)] flex flex-wrap gap-x-6 gap-y-2 text-sm muted">
+      <a class="no-underline hover:text-[var(--ink)]" href={`mailto:${site.email}`}>{site.email}</a>
+      <a class="no-underline hover:text-[var(--ink)]" href={site.github}>GitHub</a>
+      <a class="no-underline hover:text-[var(--ink)]" href={site.linkedin}>LinkedIn</a>
+      <span class="sm:ml-auto">Off the keyboard: <a class="no-underline hover:text-[var(--ink)]" href={site.photography}>photography</a></span>
+    </footer>
+  </body>
+</html>
