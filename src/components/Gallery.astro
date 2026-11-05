@@ -1,20 +1,45 @@
 ---
+import fs from 'node:fs';
+import path from 'node:path';
+
 interface Props { items: { src: string; caption: string }[]; title: string }
 const { items, title } = Astro.props;
+
+// Read PNG/JPEG dimensions at build time, so phone (portrait) and desktop (landscape)
+// screenshots each get a frame that fits, and the browser reserves space (no layout shift).
+function dims(src: string): { w: number; h: number } | null {
+  try {
+    const buf = fs.readFileSync(path.join(process.cwd(), 'public', src));
+    if (buf.readUInt32BE(0) === 0x89504e47) return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20) };
+    let i = 2;
+    while (i + 9 < buf.length) {
+      const marker = buf.readUInt16BE(i);
+      const len = buf.readUInt16BE(i + 2);
+      if (marker >= 0xffc0 && marker <= 0xffc3) return { w: buf.readUInt16BE(i + 7), h: buf.readUInt16BE(i + 5) };
+      i += 2 + len;
+    }
+  } catch {}
+  return null;
+}
+const slides = items.map((it) => {
+  const d = dims(it.src);
+  return { ...it, w: d?.w, h: d?.h, landscape: d ? d.w > d.h : false };
+});
 ---
-{items.length > 0 && (
+{slides.length > 0 && (
   <section class="gallery" aria-label={`${title} screenshots`} data-gallery>
     <div class="flex items-center justify-between mb-3">
       <div class="eyebrow">How it works</div>
-      <div class="flex gap-2">
+      <div class="flex items-center gap-3">
+        <span class="mono text-xs muted" data-count aria-live="polite">1 / {slides.length}</span>
         <button class="gbtn" data-dir="-1" aria-label="Previous screenshot">←</button>
         <button class="gbtn" data-dir="1" aria-label="Next screenshot">→</button>
       </div>
     </div>
     <div class="track" tabindex="0">
-      {items.map((it, i) => (
-        <figure class="slide">
-          <img src={it.src} alt={it.caption} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
+      {slides.map((it, i) => (
+        <figure class:list={['slide', it.landscape ? 'land' : 'port']}>
+          <img src={it.src} alt={it.caption} width={it.w} height={it.h} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
           <figcaption class="text-[13px] muted mt-2 leading-snug">{it.caption}</figcaption>
         </figure>
       ))}
@@ -24,8 +49,14 @@ const { items, title } = Astro.props;
 
 <style>
   .track { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding-bottom: 12px; scrollbar-width: thin; }
-  .slide { flex: 0 0 auto; scroll-snap-align: start; margin: 0; max-width: min(300px, 78vw); }
-  .slide img { height: min(560px, 70vh); width: auto; max-width: 100%; object-fit: contain; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); }
+  .slide { flex: 0 0 auto; scroll-snap-align: start; margin: 0; }
+  .slide img { display: block; width: 100%; height: auto; border: 1px solid var(--line); background: var(--panel); }
+  /* Phone screenshots: narrow portrait frames, several visible at once. */
+  .slide.port { width: min(270px, 70vw); }
+  .slide.port img { border-radius: 14px; }
+  /* Desktop screenshots: one wide frame per view. */
+  .slide.land { width: min(880px, 88vw); }
+  .slide.land img { border-radius: 10px; }
   .gbtn { width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); cursor: pointer; }
   .gbtn:hover { color: var(--ink); border-color: var(--muted); }
 </style>
@@ -33,12 +64,19 @@ const { items, title } = Astro.props;
 <script>
   for (const g of document.querySelectorAll<HTMLElement>('[data-gallery]')) {
     const track = g.querySelector<HTMLElement>('.track')!;
+    const slides = [...track.querySelectorAll<HTMLElement>('.slide')];
+    const count = g.querySelector<HTMLElement>('[data-count]');
+    const offset = (s: HTMLElement) => s.offsetLeft - slides[0].offsetLeft;
+    const current = () => {
+      const x = track.scrollLeft;
+      return slides.reduce((best, s, i) => (Math.abs(offset(s) - x) < Math.abs(offset(slides[best]) - x) ? i : best), 0);
+    };
     g.querySelectorAll<HTMLButtonElement>('.gbtn').forEach((b) =>
       b.addEventListener('click', () => {
-        const slide = track.querySelector<HTMLElement>('.slide');
-        const step = slide ? slide.offsetWidth + 20 : 300;
-        track.scrollBy({ left: Number(b.dataset.dir) * step });
+        const i = Math.min(slides.length - 1, Math.max(0, current() + Number(b.dataset.dir)));
+        track.scrollTo({ left: offset(slides[i]) });
       }),
     );
+    track.addEventListener('scroll', () => { if (count) count.textContent = `${current() + 1} / ${slides.length}`; }, { passive: true });
   }
 </script>

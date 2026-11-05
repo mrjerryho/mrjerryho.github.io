@@ -7,7 +7,7 @@ I build side projects in the evenings and on weekends, and AI coding agents do m
 
 ## The team
 
-I run a team of 13 Claude Code agents. Each has a narrow role, a fixed output format and a clear definition of done, so I review against a checklist instead of a vibe.
+I run a team of 11 Claude Code agents. Each has a narrow role, a fixed output format and a clear definition of done, so I review against a checklist instead of a vibe.
 
 | Role | Owns |
 |---|---|

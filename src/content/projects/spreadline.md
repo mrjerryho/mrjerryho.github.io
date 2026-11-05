@@ -55,7 +55,7 @@ Spreadline answers one question quickly: what is this spread worth if the price 
 
 ## Engineering highlights
 
-- **On-device pricing.** I ported my Python options model to a dependency-free Swift package. The app reprices on every drag with no round trip and keeps working offline.
+- **On-device pricing.** I ported my Python options model to a dependency-free Swift package. The app reprices on every drag with no network round trip.
 - **Exact parity, proven by tests.** The Swift engine is checked against golden outputs from the Python model. 218,738 values agree to within 7.8e-16 relative error, and most are bit-identical.
 - **Fast by default.** Responses are cached and refreshed in the background, so a cold launch shows data straight away.
 - **Designed for a production data source.** The data service sits behind one interface, so the provider can change without touching the app.
