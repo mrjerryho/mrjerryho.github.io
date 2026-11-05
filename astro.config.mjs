@@ -9,7 +9,7 @@ export default defineConfig({
   trailingSlash: 'ignore',
 
   // Old Jekyll URLs that people may still have bookmarked.
-  redirects: { '/cv': '/', '/blog': '/', '/about': '/' },
+  redirects: { '/cv': '/', '/blog': '/', '/about': '/', '/how-i-build': '/' },
 
   vite: { plugins: [tailwindcss()] },
   integrations: [sitemap()],

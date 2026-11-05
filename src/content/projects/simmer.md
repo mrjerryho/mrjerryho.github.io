@@ -1,6 +1,6 @@
 ---
 title: Simmer
-subtitle: Privacy-first screenshot triage for iPhone, built by a team of AI coding agents
+subtitle: Privacy-first screenshot triage for iPhone
 summary: An iPhone app that sorts your screenshots into the few worth acting on. Images never leave the phone, and private details are redacted on-device before anything is sent.
 status: Building
 groups: [iOS, AI]
@@ -34,8 +34,6 @@ architecture:
   links: [redacted text only, validated JSON]
   caption: The phone is the system of record. The server only ever sees redacted text.
 facts:
-  - label: Agent roles
-    value: 13 defined, 11 used here
   - label: Decision records
     value: "11"
   - label: Redaction test cases
@@ -50,5 +48,5 @@ Most screenshots are noise, and the useful ones never get looked at again. Simme
 
 - **Privacy enforced by the type system.** Network calls only accept a redacted-text type, so unredacted content can't be sent by mistake.
 - **On-device first.** OCR, redaction and noise filtering run on the phone. The backend handles text only and refuses images outright.
-- **Built by an agent team.** I wrote the product spec and made the decisions. A team of Claude Code agents designed, built, tested and audited the app under hook-enforced guardrails. More on [How I build](/how-i-build/).
+- **Built fast with an AI workflow I designed.** I wrote the spec, designed the privacy model and own the architecture. Role-scoped AI agents handled implementation under hook-enforced guardrails, and every change was verified by tests before merge.
 - **Verified, not assumed.** Two security audits, and every fix was confirmed by re-running the test suites.

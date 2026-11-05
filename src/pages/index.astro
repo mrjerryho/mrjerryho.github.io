@@ -7,19 +7,26 @@ import { site, experience } from '../data/site';
 const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const featured = all.filter((p) => p.data.featured);
 const shownExperience = experience.filter((e) => import.meta.env.DEV || !e.draft);
+const principles = [
+  { title: 'I own the design', body: 'Architecture, data models and the decisions that are hard to undo stay with me.' },
+  { title: 'AI makes me faster', body: 'I use AI coding tools heavily, inside a workflow I set up, and I review every change that ships.' },
+  { title: 'Proof over claims', body: 'Nothing is done until a test or a real run proves it. A port has to match the original’s outputs, not roughly.' },
+  { title: 'Guardrails in code', body: 'Safety rules such as read-only audits and no destructive operations are enforced by tooling, not memory.' },
+  { title: 'A second brain that compounds', body: 'Decisions, research and lessons go into an Obsidian knowledge base, so each project starts from what the last one taught me.' },
+];
 ---
 <Base>
   <section class="wrap pt-12 pb-16 sm:pt-20">
     <div class="grid gap-10 sm:grid-cols-[1fr_auto] items-end">
       <div>
         <p class="eyebrow mb-5">{site.title} · {site.location}</p>
-        <h1 class="text-4xl sm:text-6xl font-semibold leading-[1.05] max-w-[16ch]">
-          I build full-stack systems, iOS apps and the agents that help ship them.
+        <h1 class="text-4xl sm:text-6xl font-semibold leading-[1.05] max-w-[17ch]">
+          A decade of <span class="whitespace-nowrap">full-stack</span> engineering, made faster with AI.
         </h1>
         <p class="text-lg muted mt-6 max-w-[58ch]">
           Coding since 2012 and shipping software professionally for almost ten years, across streaming media,
-          e-commerce and real estate tech. Outside work I build trading tools, fitness and focus apps, and a team of
-          AI coding agents that does most of the typing while I design, review and decide.
+          e-commerce and real estate tech. I design the systems and own the decisions, and AI tooling lets me build,
+          test and iterate faster. Outside work I build trading tools, a fitness game and focus apps.
         </p>
         <div class="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-[15px]">
           <a class="link" href="/projects/">See the work</a>
@@ -55,16 +62,17 @@ const shownExperience = experience.filter((e) => import.meta.env.DEV || !e.draft
     </div>
   </section>
 
-  <section class="wrap mt-24">
-    <div class="border-t border-[var(--line)] pt-10 grid gap-6 md:grid-cols-[1fr_1.2fr]">
-      <h2 class="text-3xl font-semibold leading-tight max-w-[18ch]">Agents draft. Tests verify. I decide.</h2>
-      <div>
-        <p class="muted">
-          My side projects are built by a team of AI coding agents with defined roles, guardrails and sources of truth.
-          I act as product owner and reviewer. Nothing counts as done until a test or a real run says so.
-        </p>
-        <a href="/how-i-build/" class="link inline-block mt-4">How I build →</a>
-      </div>
+  <section class="wrap mt-24" aria-labelledby="how-i-work">
+    <div class="border-t border-[var(--line)] pt-10 grid gap-10 md:grid-cols-[1fr_1.6fr]">
+      <h2 id="how-i-work" class="text-3xl font-semibold leading-tight max-w-[14ch]">How I work</h2>
+      <dl class="grid gap-7 sm:grid-cols-2">
+        {principles.map((p) => (
+          <div>
+            <dt class="font-semibold">{p.title}</dt>
+            <dd class="muted mt-1">{p.body}</dd>
+          </div>
+        ))}
+      </dl>
     </div>
   </section>
 </Base>
