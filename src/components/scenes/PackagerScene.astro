@@ -1,0 +1,107 @@
+---
+// A playful packing line: artwork, metadata and audio ride a conveyor into the packager,
+// get stamped into a delivery package, and light up a TV storefront.
+---
+<svg class="pack-scene" viewBox="0 0 880 170" role="img" aria-label="Animation: artwork, metadata and audio packaged and delivered to a streaming storefront">
+  <!-- conveyor -->
+  <rect class="belt" x="0" y="118" width="640" height="10" rx="5" />
+  <line class="belt-dash" x1="0" y1="123" x2="640" y2="123" />
+  <g class="rollers">{Array.from({ length: 9 }, (_, i) => <circle cx={30 + i * 72} cy="134" r="6" />)}</g>
+
+  <!-- items riding in -->
+  <g class="item i1">
+    <rect class="tile" width="46" height="58" rx="5" y="58" />
+    <path class="art" d="M6 104 l12 -16 l8 10 l6 -7 l10 13 z" />
+    <circle class="art" cx="33" cy="72" r="5" />
+  </g>
+  <g class="item i2">
+    <rect class="tile" width="64" height="30" rx="5" y="86" />
+    <text class="lbl" x="32" y="105" text-anchor="middle">.xml</text>
+  </g>
+  <g class="item i3">
+    <rect class="tile" width="54" height="30" rx="5" y="86" />
+    <path class="wave" d="M8 101 l5 -7 l5 12 l5 -16 l5 18 l5 -12 l5 8 l5 -3" />
+  </g>
+
+  <!-- the packager -->
+  <g class="machine">
+    <rect class="press-rail" x="380" y="8" width="10" height="40" />
+    <rect class="press" x="350" y="40" width="70" height="16" rx="4" />
+    <rect class="housing" x="330" y="56" width="110" height="62" rx="10" />
+    <text class="amp" x="385" y="95" text-anchor="middle">AMP</text>
+  </g>
+
+  <!-- the package heading out -->
+  <g class="pkg">
+    <rect class="box" x="0" y="80" width="40" height="36" rx="4" />
+    <rect class="ribbon" x="17" y="80" width="6" height="36" />
+    <rect class="ribbon" x="0" y="95" width="40" height="6" />
+  </g>
+
+  <!-- the storefront -->
+  <g class="tv">
+    <rect class="screen" x="680" y="26" width="184" height="104" rx="10" />
+    <rect class="stand" x="760" y="130" width="24" height="10" />
+    <rect class="stand" x="738" y="140" width="68" height="6" rx="3" />
+    {Array.from({ length: 8 }, (_, i) => (
+      <rect class="poster" style={`--pd:${(i % 4) * 0.08 + Math.floor(i / 4) * 0.16}s`} x={696 + (i % 4) * 40} y={40 + Math.floor(i / 4) * 42} width="32" height="36" rx="3" />
+    ))}
+  </g>
+</svg>
+
+<style>
+  .pack-scene { display: block; width: 100%; height: auto; }
+  .belt { fill: color-mix(in oklch, var(--ink) 70%, var(--bg)); }
+  .belt-dash { stroke: var(--bg); stroke-width: 2; stroke-dasharray: 10 14; opacity: .5; }
+  .rollers circle { fill: color-mix(in oklch, var(--ink) 30%, var(--bg)); }
+  .tile { fill: var(--bg); stroke: var(--ink); stroke-width: 1.5; }
+  .art { fill: var(--accent); }
+  .lbl { fill: var(--ink); font: 600 12px var(--font-mono), ui-monospace, monospace; }
+  .wave { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .housing { fill: var(--accent); }
+  .press, .press-rail { fill: color-mix(in oklch, var(--ink) 65%, var(--bg)); }
+  .amp { fill: var(--bg); font: 700 20px var(--font-sans), system-ui, sans-serif; letter-spacing: .06em; }
+  .box { fill: color-mix(in oklch, var(--accent) 35%, var(--bg)); stroke: var(--ink); stroke-width: 1.5; }
+  .ribbon { fill: var(--accent); }
+  .screen { fill: var(--ink); }
+  .stand { fill: color-mix(in oklch, var(--ink) 50%, var(--bg)); }
+  .poster { fill: color-mix(in oklch, var(--accent) 25%, var(--ink)); }
+
+  /* Static layout (also the reduced-motion view). */
+  .i1 { transform: translateX(40px); } .i2 { transform: translateX(120px); } .i3 { transform: translateX(210px); }
+  .pkg { transform: translateX(560px); transform-box: fill-box; transform-origin: center; }
+  .poster { fill: var(--accent); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .item { animation: ride 4.8s linear infinite; }
+    .i1 { animation-delay: 0s; } .i2 { animation-delay: .5s; } .i3 { animation-delay: 1s; }
+    .belt-dash { animation: belt .6s linear infinite; }
+    .press { animation: stamp 4.8s ease-in-out infinite; }
+    .pkg { animation: ship 4.8s cubic-bezier(.5, 0, .3, 1) infinite; }
+    .poster { animation: light 4.8s ease-out infinite; animation-delay: var(--pd, 0s); }
+  }
+  @keyframes ride {
+    0% { transform: translateX(-80px); opacity: 0; }
+    6% { opacity: 1; }
+    40% { transform: translateX(330px); opacity: 1; }
+    44% { transform: translateX(350px); opacity: 0; }
+    100% { transform: translateX(350px); opacity: 0; }
+  }
+  @keyframes belt { to { stroke-dashoffset: -24; } }
+  @keyframes stamp {
+    0%, 44% { transform: translateY(0); }
+    50% { transform: translateY(14px); }
+    56%, 100% { transform: translateY(0); }
+  }
+  @keyframes ship {
+    0%, 52% { transform: translateX(400px); opacity: 0; }
+    56% { transform: translateX(450px); opacity: 1; }
+    78% { transform: translateX(640px); opacity: 1; }
+    84%, 100% { transform: translateX(660px) scale(.6); opacity: 0; }
+  }
+  @keyframes light {
+    0%, 80% { fill: color-mix(in oklch, var(--accent) 25%, var(--ink)); }
+    86%, 96% { fill: var(--accent); }
+    100% { fill: color-mix(in oklch, var(--accent) 25%, var(--ink)); }
+  }
+</style>

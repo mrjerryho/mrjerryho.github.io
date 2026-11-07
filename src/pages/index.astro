@@ -2,16 +2,16 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import ProjectRow from '../components/ProjectRow.astro';
-import { site, experience } from '../data/site';
+import ProDialog from '../components/ProDialog.astro';
+import { site, disney, earlier, references } from '../data/site';
 
 const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const featured = all.filter((p) => p.data.featured);
-const shownExperience = experience.filter((e) => import.meta.env.DEV || !e.draft);
 const principles = [
   { title: 'I own the design', body: 'Architecture, data models and the decisions that are hard to undo stay with me.' },
   { title: 'AI makes me faster', body: 'I use AI coding tools heavily, inside a workflow I set up, and I review every change that ships.' },
   { title: 'Proof over claims', body: 'Nothing is done until a test or a real run proves it. A port has to match the original’s outputs, not roughly.' },
-  { title: 'Guardrails in code', body: 'Safety rules such as read-only audits and no destructive operations are enforced by tooling, not memory.' },
+  { title: 'Reliability is a feature', body: 'Queues, retries and alarms go in from day one, so systems recover on their own instead of paging someone.' },
   { title: 'A second brain that compounds', body: 'Decisions, research and lessons go into an Obsidian knowledge base, so each project starts from what the last one taught me.' },
 ];
 ---
@@ -19,55 +19,90 @@ const principles = [
   <section class="wrap pt-12 pb-16 sm:pt-20">
     <div class="grid gap-10 sm:grid-cols-[1fr_auto] items-end">
       <div>
-        <p class="eyebrow mb-5">{site.title} · {site.location}</p>
-        <h1 class="text-4xl sm:text-6xl font-semibold leading-[1.05] max-w-[17ch]">
+        <p class="eyebrow mb-5 rise" style="--d:0ms">{site.title} · {site.location}</p>
+        <h1 class="text-4xl sm:text-6xl font-semibold leading-[1.05] max-w-[17ch] rise" style="--d:80ms">
           A decade of <span class="whitespace-nowrap">full-stack</span> engineering, made faster with AI.
         </h1>
-        <p class="text-lg muted mt-6 max-w-[58ch]">
-          Coding since 2012 and shipping software professionally for almost ten years, across streaming media,
-          e-commerce and real estate tech. I design the systems and own the decisions, and AI tooling lets me build,
-          test and iterate faster. Outside work I build trading tools, a fitness game and focus apps.
+        <p class="text-lg muted mt-6 max-w-[58ch] rise" style="--d:160ms">
+          Coding since 2012 and shipping software professionally for almost ten years. At Disney I build the
+          high-throughput systems that move its media. I design the systems and own the decisions, and AI tooling
+          lets me build, test and iterate faster. Outside work I build trading tools, a fitness game and focus apps.
         </p>
-        <div class="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-[15px]">
-          <a class="link" href="/projects/">See the work</a>
+        <div class="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-[15px] rise" style="--d:240ms">
+          <a class="link" href="#professional">Professional work</a>
+          <a class="link" href="/projects/">Side projects</a>
           <a class="link" href={`mailto:${site.email}`}>Email me</a>
           <a class="link" href={site.linkedin}>LinkedIn</a>
         </div>
       </div>
       <img src="/img/jerry.jpg" alt="Jerry Ho" width="180" height="180"
-           class="hidden sm:block w-[180px] h-[180px] rounded-full object-cover object-top border border-[var(--line)]" />
+           class="hidden sm:block w-[180px] h-[180px] rounded-full object-cover object-top border border-[var(--line)] rise" style="--d:120ms" />
     </div>
   </section>
 
-  <section class="wrap" aria-labelledby="work">
+  <section class="wrap" id="professional" aria-labelledby="pro-h">
+    <div class="border-t border-[var(--line)] pt-10">
+      <p class="eyebrow mb-3">Professional work</p>
+      <h2 id="pro-h" class="text-3xl sm:text-4xl font-semibold">{disney.org}<span class="muted font-normal"> · {disney.role}</span></h2>
+      <p class="muted mt-4 max-w-[62ch] text-[17px]">{disney.intro}</p>
+
+      <dl class="grid grid-cols-1 sm:grid-cols-3 gap-px bg-[var(--line)] border border-[var(--line)] rounded-2xl overflow-hidden mt-10 reveal">
+        {disney.stats.map((s) => (
+          <div class="bg-[var(--bg)] p-6">
+            <dt class="sr-only">{s.label}</dt>
+            <dd>
+              <span class="block text-3xl sm:text-4xl font-semibold tracking-tight">{s.value}</span>
+              <span class="block muted text-sm mt-1">{s.label}</span>
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      <div class="grid gap-6 md:grid-cols-2 mt-6">
+        {disney.work.map((w) => (
+          <button type="button" class="pro-card reveal group text-left" data-open={`dlg-${w.id}`} aria-haspopup="dialog">
+            <span class="eyebrow">{w.scene === 'train' ? 'Transfer platform' : 'Disney+ launch'}</span>
+            <h3 class="text-2xl font-semibold mt-3 group-hover:text-[var(--accent-ink)]">{w.title}</h3>
+            <p class="muted mt-1">{w.subtitle}</p>
+            <p class="mono text-xs muted mt-5">{w.stack.slice(0, 6).join(' · ')}</p>
+            <span class="link inline-block mt-5 text-[15px]">See how it works ↗</span>
+          </button>
+        ))}
+      </div>
+
+      <ul class="mt-8 grid gap-3 md:grid-cols-3 reveal">
+        {disney.points.map((pt) => <li class="muted text-[15px] border-t border-[var(--line)] pt-3">{pt}</li>)}
+      </ul>
+
+      <div class="mt-12 grid gap-4 md:grid-cols-[1fr_2fr] border-t border-[var(--line)] pt-8 reveal">
+        <div>
+          <p class="eyebrow">Earlier</p>
+          <h3 class="text-xl font-semibold mt-2">{earlier.org}</h3>
+          <p class="muted text-[15px]">{earlier.role} · {earlier.what}</p>
+        </div>
+        <ul class="space-y-2">
+          {earlier.points.map((pt) => <li class="muted text-[15px]">{pt}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {disney.work.map((w) => <ProDialog work={w} org={disney.org} />)}
+
+  <section class="wrap mt-20" aria-labelledby="work">
     <div class="flex items-baseline justify-between mb-2">
-      <h2 id="work" class="eyebrow">Selected work</h2>
+      <h2 id="work" class="eyebrow">Side projects</h2>
       <a href="/projects/" class="text-sm muted no-underline hover:text-[var(--ink)]">All projects →</a>
     </div>
     {featured.map((p, i) => <ProjectRow project={p} index={i + 1} />)}
   </section>
 
-  <section class="wrap mt-16" aria-labelledby="experience">
-    <h2 id="experience" class="eyebrow mb-8">Professional experience</h2>
-    <div class="grid gap-x-12 gap-y-10 md:grid-cols-2">
-      {shownExperience.map((e) => (
-        <div class:list={['border-t border-[var(--line)] pt-6', { 'opacity-50': e.draft }]}>
-          <h3 class="text-xl font-semibold">{e.area}{e.draft && <span class="mono text-xs muted ml-2">draft, hidden in production</span>}</h3>
-          <ul class="mt-3 space-y-2">
-            {e.points.map((pt) => <li class="muted">{pt}</li>)}
-          </ul>
-          {e.stack.length > 0 && <ul class="flex flex-wrap gap-2 mt-4">{e.stack.map((s) => <li class="chip">{s}</li>)}</ul>}
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <section class="wrap mt-24" aria-labelledby="how-i-work">
+  <section class="wrap mt-16" aria-labelledby="how-i-work">
     <div class="border-t border-[var(--line)] pt-10 grid gap-10 md:grid-cols-[1fr_1.6fr]">
       <h2 id="how-i-work" class="text-3xl font-semibold leading-tight max-w-[14ch]">How I work</h2>
       <dl class="grid gap-7 sm:grid-cols-2">
         {principles.map((p) => (
-          <div>
+          <div class="reveal">
             <dt class="font-semibold">{p.title}</dt>
             <dd class="muted mt-1">{p.body}</dd>
           </div>
@@ -75,4 +110,40 @@ const principles = [
       </dl>
     </div>
   </section>
+
+  <section class="wrap mt-24" aria-labelledby="refs">
+    <h2 id="refs" class="eyebrow mb-8">What teammates say</h2>
+    <div class="grid gap-x-12 gap-y-10 md:grid-cols-2">
+      {references.map((r) => (
+        <figure class="reveal border-t border-[var(--line)] pt-6 m-0">
+          <blockquote class="text-[17px] leading-relaxed">“{r.quote}”</blockquote>
+          <figcaption class="mt-4 text-sm"><span class="font-medium">{r.name}</span><span class="muted"> · {r.title}</span></figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
 </Base>
+
+<style>
+  .pro-card { display: block; width: 100%; cursor: pointer; font: inherit; color: inherit; border: 1px solid var(--line); border-radius: 16px; padding: 24px; background: var(--panel); transition: border-color .2s ease, transform .2s ease; }
+  .pro-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+</style>
+
+<script>
+  // Open the professional-work popups; deep links like /#media-monorail open them directly.
+  document.addEventListener('astro:page-load', () => {
+    const open = (id: string) => {
+      const d = document.getElementById(id) as HTMLDialogElement | null;
+      if (!d || d.open) return;
+      d.showModal();
+      if (location.hash !== '#' + id.slice(4)) history.replaceState(null, '', '#' + id.slice(4));
+    };
+    document.querySelectorAll<HTMLButtonElement>('[data-open]').forEach((b) => b.addEventListener('click', () => open(b.dataset.open!)));
+    document.querySelectorAll<HTMLDialogElement>('dialog.pro-dialog').forEach((d) => {
+      // Click on the backdrop (outside the panel) closes it.
+      d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
+      d.addEventListener('close', () => { if (location.hash) history.replaceState(null, '', location.pathname); });
+    });
+    if (location.hash) open('dlg-' + location.hash.slice(1));
+  });
+</script>

@@ -1,0 +1,82 @@
+---
+import ArchDiagram from './ArchDiagram.astro';
+import TrainScene from './scenes/TrainScene.astro';
+import PackagerScene from './scenes/PackagerScene.astro';
+import type { ProWork } from '../data/site';
+
+interface Props { work: ProWork; org: string }
+const { work: w, org } = Astro.props;
+---
+<dialog class="pro-dialog" id={`dlg-${w.id}`} aria-labelledby={`dlg-${w.id}-title`}>
+  <div class="dlg-inner">
+    <form method="dialog" class="dlg-close-wrap">
+      <button class="dlg-close" aria-label="Close">✕</button>
+    </form>
+
+    <div class="scene">
+      {w.scene === 'train' ? <TrainScene /> : <PackagerScene />}
+    </div>
+
+    <div class="dlg-body">
+      <p class="eyebrow">{org} · Professional work</p>
+      <h2 id={`dlg-${w.id}-title`} class="text-3xl sm:text-4xl font-semibold mt-2">{w.title}</h2>
+      <p class="muted mt-1 text-[17px]">{w.subtitle}</p>
+      <p class="mt-4 max-w-[68ch]">{w.summary}</p>
+
+      <dl class="facts">
+        {w.facts.map((f) => (
+          <div>
+            <dt class="eyebrow">{f.label}</dt>
+            <dd class="text-xl font-semibold mt-1">{f.value}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <div class="grid gap-5 sm:grid-cols-3 mt-8">
+        {w.highlights.map((h) => (
+          <div class="border-t border-[var(--line)] pt-3">
+            <h3 class="font-semibold">{h.title}</h3>
+            <p class="muted text-[15px] mt-1">{h.body}</p>
+          </div>
+        ))}
+      </div>
+
+      <h3 class="eyebrow mt-10 mb-4">System architecture</h3>
+      <ArchDiagram {...w.architecture} compact />
+
+      <ul class="flex flex-wrap gap-2 mt-8" aria-label="Stack">{w.stack.map((s) => <li class="chip">{s}</li>)}</ul>
+
+      <p class="muted text-sm mt-8 pt-5 border-t border-[var(--line)]">
+        This is professional work, so details stay at the level I can share publicly. I’m happy to go deeper in a conversation.
+      </p>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .pro-dialog {
+    width: min(960px, calc(100vw - 24px)); max-height: calc(100dvh - 32px);
+    margin: auto; padding: 0; border: 1px solid var(--line); border-radius: 20px;
+    background: var(--bg); color: var(--ink); overflow: hidden;
+    box-shadow: 0 30px 80px -20px rgb(0 0 0 / .45);
+  }
+  .pro-dialog::backdrop { background: rgb(10 10 12 / .5); backdrop-filter: blur(3px); }
+  .dlg-inner { max-height: calc(100dvh - 34px); overflow-y: auto; overscroll-behavior: contain; position: relative; }
+  .scene { background: var(--panel); border-bottom: 1px solid var(--line); padding: 18px 20px 0; }
+  .dlg-body { padding: 28px 32px 32px; }
+  .facts { display: flex; flex-wrap: wrap; gap: 14px 40px; margin-top: 24px; }
+  .dlg-close-wrap { position: sticky; top: 0; height: 0; z-index: 2; display: flex; justify-content: flex-end; }
+  .dlg-close { margin: 12px 12px 0 0; width: 38px; height: 38px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--muted); cursor: pointer; font-size: 14px; }
+  .dlg-close:hover { color: var(--ink); border-color: var(--muted); }
+  @media (max-width: 640px) { .dlg-body { padding: 22px 20px 24px; } }
+
+  /* Open/close motion. @starting-style animates from display:none; older browsers just appear. */
+  @media (prefers-reduced-motion: no-preference) {
+    .pro-dialog { transition: opacity .25s ease, transform .35s cubic-bezier(.2, .8, .2, 1), overlay .35s allow-discrete, display .35s allow-discrete; }
+    .pro-dialog:not([open]) { opacity: 0; transform: translateY(24px) scale(.97); }
+    .pro-dialog[open] { opacity: 1; transform: none; }
+    @starting-style { .pro-dialog[open] { opacity: 0; transform: translateY(24px) scale(.97); } }
+    .pro-dialog::backdrop { transition: background .3s ease, backdrop-filter .3s ease, overlay .35s allow-discrete, display .35s allow-discrete; }
+    @starting-style { .pro-dialog[open]::backdrop { background: rgb(10 10 12 / 0); backdrop-filter: blur(0); } }
+  }
+</style>

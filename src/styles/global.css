@@ -67,3 +67,23 @@ p { text-wrap: pretty; }
 .prose blockquote { border-left: 2px solid var(--line); padding-left: 14px; color: var(--muted); }
 
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+
+/* ---------- Motion (all of it switches off under prefers-reduced-motion) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  /* Hero: a short staggered rise on first paint. */
+  .rise { animation: rise .7s cubic-bezier(.2, .7, .2, 1) both; animation-delay: var(--d, 0ms); }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  /* Sections fade up as they scroll into view: native scroll-driven animation, no JS.
+     Browsers without animation-timeline simply show the content. */
+  @supports (animation-timeline: view()) {
+    .reveal { animation: reveal linear both; animation-timeline: view(); animation-range: entry 0% entry 45%; }
+    @keyframes reveal { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+  }
+
+  /* Page-to-page: a quick cross-fade, while project titles morph between list and detail (transition:name). */
+  ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .28s; }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

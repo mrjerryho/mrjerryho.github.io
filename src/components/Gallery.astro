@@ -62,6 +62,7 @@ const slides = items.map((it) => {
 </style>
 
 <script>
+  document.addEventListener('astro:page-load', () => {
   for (const g of document.querySelectorAll<HTMLElement>('[data-gallery]')) {
     const track = g.querySelector<HTMLElement>('.track')!;
     const slides = [...track.querySelectorAll<HTMLElement>('.slide')];
@@ -79,4 +80,5 @@ const slides = items.map((it) => {
     );
     track.addEventListener('scroll', () => { if (count) count.textContent = `${current() + 1} / ${slides.length}`; }, { passive: true });
   }
+  });
 </script>
